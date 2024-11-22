@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Management System</title>
     <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+    <script>
+    // Disable right-click (context menu)
+    document.addEventListener('contextmenu', function(event) {
+        event.preventDefault(); // Prevent the default right-click context menu
+        alert('Right-click is disabled on this page.');
+    });
+</script>
+
     <style>
         /* General Styles */
         body {
