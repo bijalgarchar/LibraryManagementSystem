@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Students - Library Management System</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(to right, #004d40, #00796b); /* Gradient background */
+            color: white;
+            padding: 30px; /* Increased padding for more space */
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin: 20px; /* Consistent margin */
+        }
+
+        header h1 {
+            font-size: 2.5em; /* Larger font size */
+            margin: 0; /* Remove default margin */
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for better visibility */
+        }
+
+        nav {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        button.remove-btn {
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button.remove-btn:hover {
+            background-color: #e60000;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 15px; /* Added radius to footer */
+            margin-top: 20px; /* Added margin on top */
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>View Students</h1>
+</header>
+<nav>
+    <a href="index.html">Home</a>
+    <a href="add_book.html">Add Book</a>
+    <a href="add_student.html">Add Student</a>
+    <a href="view_books.html">View Books</a>
+    <a href="view_students.html">View Students</a>
+    <a href="issue_book.html">Issue Book</a>
+    <a href="return_book.html">Return Book</a>
+    <a href="library_records.html">Library Records</a>
+</nav>
+<div class="content">
+    <h2>List of Students</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="studentList"></tbody> <!-- List to display students -->
+    </table>
+</div>
+<footer>
+    <p>&copy; 2024 Dhudkot Taluka School</p>
+</footer>
+  <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
+<!-- Firebase configuration -->
+<script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+       apiKey: "AIzaSyD28QU805xVYtn55_yP6LtnG9f0yN-mjHU",
+  authDomain: "library-management-syste-2b73e.firebaseapp.com",
+  projectId: "library-management-syste-2b73e",
+  storageBucket: "library-management-syste-2b73e.firebasestorage.app",
+  messagingSenderId: "968414731773",
+  appId: "1:968414731773:web:98198f0ffb6bd5d88e8d94"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to display students from Firestore
+    async function displayStudents() {
+        const studentList = document.getElementById('studentList');
+        
+        // Clear existing list
+        studentList.innerHTML = '';
+
+        // Fetch students from Firestore
+        const studentsSnapshot = await db.collection('students').get();
+        if (studentsSnapshot.empty) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="3" style="text-align: center;">No students available.</td>';
+            studentList.appendChild(row);
+            return;
+        }
+
+        // Iterate through students and add them to the table
+        studentsSnapshot.forEach(doc => {
+            const student = doc.data();
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.class}</td>
+                <td><button class="remove-btn" onclick="removeStudent('${doc.id}')">Remove</button></td>
+            `;
+            studentList.appendChild(row);
+        });
+    }
+
+    // Function to remove a student by ID
+    async function removeStudent(id) {
+        await db.collection('students').doc(id).delete(); // Remove the student from Firestore
+        displayStudents(); // Refresh the list
+    }
+
+    // Call displayStudents on page load
+    window.onload = displayStudents;
+</script>
+</body>
+</html>

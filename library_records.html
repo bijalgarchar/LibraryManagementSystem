@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Records</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Issued and Returned Books</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="add_book.html">Add Book</a>
+        <a href="add_student.html">Add Student</a>
+        <a href="view_books.html">View Books</a>
+        <a href="view_students.html">View Students</a>
+        <a href="issue_book.html">Issue Book</a>
+        <a href="return_book.html">Return Book</a>
+        <a href="library_records.html">Library Records</a>
+    </nav>
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Book Name</th>
+                <th>Issued Date</th>
+                <th>Return Date</th>
+            </tr>
+        </thead>
+        <tbody id="recordList"></tbody> <!-- List to display records -->
+    </table>
+
+    <!-- Include Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+             apiKey: "AIzaSyD28QU805xVYtn55_yP6LtnG9f0yN-mjHU",
+  authDomain: "library-management-syste-2b73e.firebaseapp.com",
+  projectId: "library-management-syste-2b73e",
+  storageBucket: "library-management-syste-2b73e.firebasestorage.app",
+  messagingSenderId: "968414731773",
+  appId: "1:968414731773:web:98198f0ffb6bd5d88e8d94"
+            // Your config details
+        };
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Function to fetch records
+        async function fetchRecords() {
+            const issuedBooks = await db.collection('issued_books').get();
+            const returnBooks = await db.collection('library_records').get();
+
+            const records = [];
+
+            issuedBooks.forEach(doc => {
+                const data = doc.data();
+                records.push({
+                    studentName: data.studentName || "Not Available",
+                    bookName: data.bookName || "Not Available",
+                    issuedDate: formatDate(data.issueDate),
+                    returnDate: "Not Returned Yet" // Default value for return date
+                });
+            });
+
+            returnBooks.forEach(doc => {
+                const data = doc.data();
+                const returnDate = formatDate(data.returnDate);
+                const studentName = data.studentName || "Not Available";
+                const bookName = data.bookName || "Not Available";
+
+                const index = records.findIndex(record => record.bookName === bookName && record.studentName === studentName);
+                if (index !== -1) {
+                    records[index].returnDate = returnDate; // Update the return date
+                } else {
+                    records.push({
+                        studentName,
+                        bookName,
+                        issuedDate: "Not Found",
+                        returnDate
+                    });
+                }
+            });
+
+            const recordList = document.getElementById('recordList');
+            recordList.innerHTML = ''; // Clear existing records
+
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.studentName}</td>
+                    <td>${record.bookName}</td>
+                    <td>${record.issuedDate}</td>
+                    <td>${record.returnDate}</td>
+                `;
+                recordList.appendChild(row);
+            });
+        }
+
+        // Function to format timestamps to dd-mm-yyyy
+       function formatDate(timestamp) {
+    if (!timestamp) return "Not Available";
+    
+    // Check if the input is a Firestore Timestamp
+    if (timestamp instanceof firebase.firestore.Timestamp) {
+        const date = timestamp.toDate(); // Convert Firestore timestamp to JS Date
+        return formatJSDate(date);
+    } 
+    // Check if it's already a JavaScript Date object
+    else if (timestamp instanceof Date) {
+        return formatJSDate(timestamp);
+    } 
+    // If it's a string, parse it as a date
+    else if (typeof timestamp === 'string') {
+        const date = new Date(timestamp);
+        return formatJSDate(date);
+    }
+    
+    return "Invalid Date"; // Handle any other case
+}
+
+// Helper function to format Date object to dd-mm-yyyy
+function formatJSDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
+
+        // Call fetchRecords on page load
+        window.onload = fetchRecords;
+    </script>
+</body>
+</html>

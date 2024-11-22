@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Book - Library Management System</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Firebase SDKs (non-module version) -->
+   <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration object
+        const firebaseConfig = {
+           apiKey: "AIzaSyD28QU805xVYtn55_yP6LtnG9f0yN-mjHU",
+  authDomain: "library-management-syste-2b73e.firebaseapp.com",
+  projectId: "library-management-syste-2b73e",
+  storageBucket: "library-management-syste-2b73e.firebasestorage.app",
+  messagingSenderId: "968414731773",
+  appId: "1:968414731773:web:98198f0ffb6bd5d88e8d94"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+</head>
+<body>
+    <header><h1>Add Book</h1></header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="add_book.html">Add Book</a>
+        <a href="add_student.html">Add Student</a>
+        <a href="view_books.html">View Books</a>
+        <a href="view_students.html">View Students</a>
+        <a href="issue_book.html">Issue Book</a>
+        <a href="return_book.html">Return Book</a>
+        <a href="library_records.html">Library Records</a>
+    </nav>
+    
+    <div class="content">
+        <h2>Add a New Book</h2>
+        <form id="addBookForm">
+            <label for="bookId">Book ID:</label><br>
+            <input type="text" id="bookId" name="bookId" required><br><br>
+            <label for="title">Title:</label><br>
+            <input type="text" id="title" name="title" required><br><br>
+            <label for="author">Author:</label><br>
+            <input type="text" id="author" name="author" required><br><br>
+            <label for="publicationYear">Publication Year:</label><br>
+            <input type="text" id="publicationYear" name="publicationYear" required><br><br>
+            <input type="submit" value="Add Book">
+        </form>
+    </div>
+    <footer><p>&copy; 2024 Dhudkot Taluka School</p></footer>
+
+    <!-- Custom script for form submission -->
+    <script>
+        // Event listener for form submission
+        document.getElementById('addBookForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const bookId = document.getElementById('bookId').value;
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const publicationYear = document.getElementById('publicationYear').value;
+
+            // Add book to Firestore
+            db.collection('books').add({
+                bookId: bookId,
+                title: title,
+                author: author,
+                publicationYear: publicationYear
+            }).then(() => {
+                alert('Book added successfully!');
+                document.getElementById('addBookForm').reset();
+            }).catch((error) => {
+                console.error('Error adding book: ', error);
+            });
+        });
+    </script>
+</body>
+</html>

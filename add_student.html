@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student - Library Management System</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+       <!-- Firebase SDKs (non-module version) -->
+   <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(to right, #004d40, #00796b); /* Gradient background */
+            color: white;
+            padding: 30px; /* Increased padding for more space */
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin: 20px; /* Consistent margin */
+            position: relative; /* For positioning the pseudo-elements */
+            overflow: hidden; /* Hide overflow for pseudo-elements */
+        }
+
+        header h1 {
+            font-size: 2.5em; /* Larger font size */
+            margin: 0; /* Remove default margin */
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for better visibility */
+        }
+
+        nav {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #00796b;
+            color: white;
+            position: relative;
+            width: 100%;
+            bottom: 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 15px; /* Added radius to footer */
+            margin-top: 20px; /* Added margin on top */
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Add Student</h1>
+</header>
+<nav>
+    <a href="index.html">Home</a>
+    <a href="add_book.html">Add Book</a>
+    <a href="add_student.html">Add Student</a>
+    <a href="view_books.html">View Books</a>
+    <a href="view_students.html">View Students</a>
+    <a href="issue_book.html">Issue Book</a>
+    <a href="return_book.html">Return Book</a>
+    <a href="library_records.html">Library Records</a>
+</nav>
+<div class="content">
+    <h2>Add a New Student</h2>
+    <form id="addStudentForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" placeholder="Enter student name" required><br><br>
+
+        <label for="class">Class:</label><br>
+        <input type="text" id="class" name="class" placeholder="Enter Student Class" required><br><br>
+
+        <input type="submit" value="Add Student">
+    </form>
+</div>
+<footer>
+    <p>&copy; 2024 Dhudkot Taluka School</p>
+</footer>
+
+<script>
+    // Firebase SDKs
+    const firebaseConfig = {
+apiKey: "AIzaSyD28QU805xVYtn55_yP6LtnG9f0yN-mjHU",
+  authDomain: "library-management-syste-2b73e.firebaseapp.com",
+  projectId: "library-management-syste-2b73e",
+  storageBucket: "library-management-syste-2b73e.firebasestorage.app",
+  messagingSenderId: "968414731773",
+  appId: "1:968414731773:web:98198f0ffb6bd5d88e8d94"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to add a student
+    document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent form submission
+
+        const name = document.getElementById('name').value;
+        const className = document.getElementById('class').value;
+
+        // Create student object
+        const student = {
+            name: name,
+            class: className
+        };
+
+        // Save to Firebase Firestore
+        db.collection('students').add(student)
+            .then(() => {
+                alert('Student added successfully!');
+                // Clear form
+                this.reset();
+            })
+            .catch((error) => {
+                console.error('Error adding student: ', error);
+                alert('Error adding student: ' + error.message);
+            });
+    });
+</script>
+</body>
+</html>
