@@ -165,6 +165,68 @@ function formatJSDate(date) {
 
         // Call fetchRecords on page load
         window.onload = fetchRecords;
+        // Function to download records as Excel with styling
+async function downloadExcel() {
+    const records = await fetchRecords(); // Fetch records
+
+    // Create a new workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(records, { skipHeader: true }); // Skip auto-generated headers
+
+    // Define custom headers
+    const headers = ["Student Name", "Book Name", "Issued Date", "Return Date"];
+    headers.forEach((header, index) => {
+        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
+        worksheet[cellAddress] = {
+            v: header,
+            t: "s",
+            s: {
+                font: { bold: true, color: { rgb: "FFFFFF" } },
+                fill: { fgColor: { rgb: "4CAF50" } },
+                alignment: { horizontal: "center" },
+            },
+        };
+    });
+
+    // Apply styling to data rows
+    records.forEach((record, rowIndex) => {
+        Object.values(record).forEach((value, colIndex) => {
+            const cellAddress = XLSX.utils.encode_cell({ r: rowIndex + 1, c: colIndex });
+            worksheet[cellAddress] = {
+                v: value,
+                t: "s",
+                s: {
+                    font: { color: { rgb: "333333" } },
+                    alignment: { horizontal: "left" },
+                },
+            };
+
+            // Alternate row background colors for better readability
+            if ((rowIndex + 1) % 2 === 0) {
+                worksheet[cellAddress].s.fill = { fgColor: { rgb: "F2F2F2" } };
+            } else {
+                worksheet[cellAddress].s.fill = { fgColor: { rgb: "FFFFFF" } };
+            }
+        });
+    });
+
+    // Adjust column widths for better readability
+    worksheet["!cols"] = [
+        { wch: 20 }, // Student Name
+        { wch: 25 }, // Book Name
+        { wch: 15 }, // Issued Date
+        { wch: 15 }, // Return Date
+    ];
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Library Records");
+
+    // Write the workbook to a file
+    XLSX.writeFile(workbook, "Library_Records.xlsx");
+}
+
+// Add event listener for the download button
+document.getElementById('downloadBtn').addEventListener('click', downloadExcel);
     </script>
 </body>
 </html>
