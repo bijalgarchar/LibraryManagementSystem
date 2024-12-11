@@ -3,211 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Return Book - Library Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Library Records</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #f4f4f4;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
-
-        header {
-            background: linear-gradient(to right, #004d40, #00796b);
-            color: white;
-            text-align: center;
-            padding: 40px 0;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            font-weight: 600;
-        }
-
-       nav {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-nav a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: white;
-    padding: 15px 20px;
-    background-color: #009688; /* Changed for variation */
-    border: 2px solid #004d40;
-    border-radius: 30px; /* Rounded buttons */
-    transition: background-color 0.3s, transform 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-nav a:hover {
-    background-color: #004d40;
-    transform: translateY(-3px);
-    color: #b2dfdb; /* Light color on hover */
-}
-        .content {
-            max-width: 700px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-
-        h2 {
+        h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
         }
-
-        label {
-            font-weight: 600;
-            color: #555;
-        }
-
-        select {
+        table {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0 20px;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
             border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        input[type="submit"] {
-            width: 100%;
             padding: 12px;
-            background: #00796b;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        #downloadBtn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 1.2rem;
-            transition: background 0.3s, transform 0.2s;
-        }
-
-        input[type="submit"]:hover {
-            background: #004d40;
-            transform: scale(1.02);
-        }
-
-        footer {
             text-align: center;
-            padding: 20px;
-            background-color: #00796b;
-            color: white;
-            border-radius: 15px;
-            margin-top: 30px;
-            font-size: 0.9rem;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+        }
+        #downloadBtn:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>Return Book</h1>
-</header>
-<nav>
-    <a href="index.html">Home</a>
-    <a href="add_book.html">Add Book</a>
-    <a href="add_student.html">Add Student</a>
-    <a href="view_books.html">View Books</a>
-    <a href="view_students.html">View Students</a>
-    <a href="issue_book.html">Issue Book</a>
-    <a href="return_book.html">Return Book</a>
-    <a href="library_records.html">Library Records</a>
-</nav>
-<div class="content">
-    <h2>Return a Book</h2>
-    <form id="returnBookForm">
-        <label for="issuedBook">Issued Book:</label>
-        <select id="issuedBook" name="issuedBook" required>
-            <option value="">Select Issued Book</option>
-        </select>
+    <h1>Issued and Returned Books</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="add_book.html">Add Book</a>
+        <a href="add_student.html">Add Student</a>
+        <a href="view_books.html">View Books</a>
+        <a href="view_students.html">View Students</a>
+        <a href="issue_book.html">Issue Book</a>
+        <a href="return_book.html">Return Book</a>
+        <a href="library_records.html">Library Records</a>
+    </nav>
+    <button id="downloadBtn">Download as Excel</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Book Name</th>
+                <th>Issued Date</th>
+                <th>Return Date</th>
+            </tr>
+        </thead>
+        <tbody id="recordList"></tbody> <!-- List to display records -->
+    </table>
 
-        <input type="submit" value="Return Book">
-    </form>
-</div>
-<footer>
-    <p>&copy; 2024 Dhudkot Taluka School</p>
-</footer>
+    <!-- Include Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
+    <!-- Include SheetJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
-<script>
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyD28QU805xVYtn55_yP6LtnG9f0yN-mjHU",
-        authDomain: "library-management-syste-2b73e.firebaseapp.com",
-        projectId: "library-management-syste-2b73e",
-        storageBucket: "library-management-syste-2b73e.firebaseapp.com",
-        messagingSenderId: "968414731773",
-        appId: "1:968414731773:web:98198f0ffb6bd5d88e8d94"
-    };
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD28QU805xVYtn55_yP6LtnG9f0yN-mjHU",
+            authDomain: "library-management-syste-2b73e.firebaseapp.com",
+            projectId: "library-management-syste-2b73e",
+            storageBucket: "library-management-syste-2b73e.firebasestorage.app",
+            messagingSenderId: "968414731773",
+            appId: "1:968414731773:web:98198f0ffb6bd5d88e8d94"
+        };
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        // Function to fetch records
+        async function fetchRecords() {
+            const issuedBooks = await db.collection('issued_books').get();
+            const returnBooks = await db.collection('library_records').get();
 
-    // Populate issued books dropdown
-    function populateIssuedBooks() {
-        const issuedBookSelect = document.getElementById('issuedBook');
-        db.collection("issued_books").get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const issuedBook = doc.data();
-                const option = document.createElement('option');
-                option.value = doc.id;
-                option.textContent = `${issuedBook.studentName} - ${issuedBook.bookName}`;
-                issuedBookSelect.appendChild(option);
+            const records = [];
+
+            issuedBooks.forEach(doc => {
+                const data = doc.data();
+                records.push({
+                    studentName: data.studentName || "Not Available",
+                    bookName: data.bookName || "Not Available",
+                    issuedDate: formatDate(data.issueDate),
+                    returnDate: "Not Returned Yet" // Default value for return date
+                });
             });
-        });
-    }
 
-    // Handle form submission
-    document.getElementById('returnBookForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+            returnBooks.forEach(doc => {
+                const data = doc.data();
+                const returnDate = formatDate(data.returnDate);
+                const studentName = data.studentName || "Not Available";
+                const bookName = data.bookName || "Not Available";
 
-        const issuedBookId = document.getElementById('issuedBook').value;
-
-        // Fetch book details
-        db.collection("issued_books").doc(issuedBookId).get().then((doc) => {
-            if (doc.exists) {
-                const issuedBook = doc.data();
-
-                // Create return record
-                const returnRecord = {
-                    studentName: issuedBook.studentName,
-                    bookName: issuedBook.bookName,
-                    returnDate: new Date().toLocaleDateString()
-                };
-
-                // Add to library_records
-                db.collection("library_records").add(returnRecord)
-                    .then(() => {
-                        alert("Book returned successfully!");
-                        document.getElementById('returnBookForm').reset();
-                    })
-                    .catch((error) => {
-                        console.error("Error adding return record: ", error);
+                const index = records.findIndex(record => record.bookName === bookName && record.studentName === studentName);
+                if (index !== -1) {
+                    records[index].returnDate = returnDate; // Update the return date
+                } else {
+                    records.push({
+                        studentName,
+                        bookName,
+                        issuedDate: "Not Found",
+                        returnDate
                     });
-            } else {
-                alert("No such issued book found!");
+                }
+            });
+
+            const recordList = document.getElementById('recordList');
+            recordList.innerHTML = ''; // Clear existing records
+
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.studentName}</td>
+                    <td>${record.bookName}</td>
+                    <td>${record.issuedDate}</td>
+                    <td>${record.returnDate}</td>
+                `;
+                recordList.appendChild(row);
+            });
+
+            return records; // Return records for download
+        }
+
+        // Function to format timestamps to dd-mm-yyyy
+        function formatDate(timestamp) {
+            if (!timestamp) return "Not Available";
+            if (timestamp instanceof firebase.firestore.Timestamp) {
+                const date = timestamp.toDate();
+                return formatJSDate(date);
+            } else if (timestamp instanceof Date) {
+                return formatJSDate(timestamp);
+            } else if (typeof timestamp === 'string') {
+                const date = new Date(timestamp);
+                return formatJSDate(date);
             }
-        }).catch((error) => {
-            console.error("Error fetching issued book: ", error);
+            return "Invalid Date";
+        }
+
+        function formatJSDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        // Function to download records as Excel
+      // Function to download records as Excel with styling
+async function downloadExcel() {
+    const records = await fetchRecords(); // Fetch records
+
+    // Create a new workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(records, { skipHeader: true }); // Skip auto-generated headers
+
+    // Define custom headers
+    const headers = ["Student Name", "Book Name", "Issued Date", "Return Date"];
+    headers.forEach((header, index) => {
+        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
+        worksheet[cellAddress] = {
+            v: header,
+            t: "s",
+            s: {
+                font: { bold: true, color: { rgb: "FFFFFF" } },
+                fill: { fgColor: { rgb: "4CAF50" } },
+                alignment: { horizontal: "center" },
+            },
+        };
+    });
+
+    // Apply styling to data rows
+    records.forEach((record, rowIndex) => {
+        Object.values(record).forEach((value, colIndex) => {
+            const cellAddress = XLSX.utils.encode_cell({ r: rowIndex + 1, c: colIndex });
+            worksheet[cellAddress] = {
+                v: value,
+                t: "s",
+                s: {
+                    font: { color: { rgb: "333333" } },
+                    alignment: { horizontal: "left" },
+                },
+            };
+
+            // Alternate row background colors for better readability
+            if ((rowIndex + 1) % 2 === 0) {
+                worksheet[cellAddress].s.fill = { fgColor: { rgb: "F2F2F2" } };
+            } else {
+                worksheet[cellAddress].s.fill = { fgColor: { rgb: "FFFFFF" } };
+            }
         });
     });
 
-    window.onload = populateIssuedBooks;
-</script>
+    // Adjust column widths for better readability
+    worksheet["!cols"] = [
+        { wch: 20 }, // Student Name
+        { wch: 25 }, // Book Name
+        { wch: 15 }, // Issued Date
+        { wch: 15 }, // Return Date
+    ];
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Library Records");
+
+    // Write the workbook to a file
+    XLSX.writeFile(workbook, "Library_Records.xlsx");
+}
+
+// Add event listener for the download button
+document.getElementById('downloadBtn').addEventListener('click', downloadExcel);
+
+    </script>
 </body>
 </html>
